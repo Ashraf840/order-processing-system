@@ -15,6 +15,7 @@ ORDER_STATUS_CHOICES = [
     ('P', 'Pending'),
     ('S', 'Successful'),
     ('R', 'Refunded'),
+    ('F', 'Failed'),
 ]
 
 class PaymentInformation(models.Model):

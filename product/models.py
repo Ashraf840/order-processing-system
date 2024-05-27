@@ -1,20 +1,36 @@
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 import uuid
+from django.utils.text import slugify
 
 class Category(MPTTModel):
     name = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(max_length=120)
+    slug = models.SlugField(max_length=120, blank=True)
     parent = TreeForeignKey('self', on_delete=models.PROTECT, null=True, blank=True, related_name='children')
 
     class MPTTMeta:
         order_insertion_by = ["name"]
 
     def __str__(self) -> str:
-        return self.name
+        return f"{self.name} -> {self.parent}"
+    
+    def save(self, *args, **kwargs):
+        # If slug is not provided or is empty, generate it from the name field
+        if not self.slug:
+            self.slug = slugify(self.name)
+        
+        # Ensure the slug is unique
+        unique_slug = self.slug
+        counter = 1
+        while Category.objects.filter(slug=unique_slug).exists():
+            unique_slug = f'{self.slug}-{counter}'
+            counter += 1
+        self.slug = unique_slug
+
+        super().save(*args, **kwargs)
 
 class Brand(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
     created_at = models.DateField(auto_now_add=True)
 
@@ -37,7 +53,7 @@ class AttributeValue(models.Model):
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=120)
+    slug = models.SlugField(max_length=120, blank=True)
     description = models.TextField(blank=True, null=True)
     is_active = models.BooleanField(default=True, help_text="Automatically deactive if the product is out of stock from the inventory on every product line.")
     created_at = models.DateField(auto_now_add=True)
@@ -46,6 +62,21 @@ class Product(models.Model):
 
     def __str__(self) -> str:
         return self.name
+    
+    def save(self, *args, **kwargs):
+        # If slug is not provided or is empty, generate it from the name field
+        if not self.slug:
+            self.slug = slugify(self.name)
+        
+        # Ensure the slug is unique
+        unique_slug = self.slug
+        counter = 1
+        while Category.objects.filter(slug=unique_slug).exists():
+            unique_slug = f'{self.slug}-{counter}'
+            counter += 1
+        self.slug = unique_slug
+
+        super().save(*args, **kwargs)
 
 class ProductLine(models.Model):
     product_id = models.ForeignKey(Product, on_delete=models.PROTECT)
