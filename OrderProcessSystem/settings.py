@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "product.apps.ProductConfig",
     "inventory.apps.InventoryConfig",
     "cart.apps.CartConfig",
+    "user.apps.UserConfig",
 ]
 
 MIDDLEWARE = [

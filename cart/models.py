@@ -1,14 +1,17 @@
 from django.db import models
 from django.contrib.auth.models import User
 from product.models import ProductLine
+import uuid
 
 class Cart(models.Model):
+    # uuid = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)    # If the user is removed, although the cart will be in the system from future analytics
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
 
     def __str__(self) -> str:
         return f"cart-{self.user}-{self.created_at}"
+        return f"cart-{self.user}-{self.created_at}-{self.uuid}"
 
 class CartItem(models.Model):
     productLine_id = models.ForeignKey(ProductLine, on_delete=models.CASCADE)
@@ -23,7 +26,7 @@ class CartItem(models.Model):
         return f"cart-{self.cart_id.user}-{self.productLine_id.product_id}"
     
     def save(self, *args, **kwargs):
-        # Automatically set the unit price
+        # Automatically set the product unit price
         if not self.unit_price:
             self.unit_price = self.productLine_id.sale_price
         
