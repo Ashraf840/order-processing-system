@@ -5,7 +5,7 @@ from .serializer import *
 from rest_framework import permissions
 
 
-class IsStaffOrAdmin(permissions.BasePermission):
+class IsStaffOrAdminPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         user = request.user
 
@@ -19,14 +19,21 @@ class IsStaffOrAdmin(permissions.BasePermission):
         return False
 
 
-class CategoryViewset(ModelViewSet):
+class StaffOrAdminViewSetMixin:
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [permissions.IsAuthenticated(), IsStaffOrAdminPermission()]
+        return [permissions.AllowAny()]
+
+
+class CategoryViewset(StaffOrAdminViewSetMixin, ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
-    def get_permissions(self):
-        if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            return [permissions.IsAuthenticated(), IsStaffOrAdmin()]
-        return [permissions.AllowAny()]
+    # def get_permissions(self):
+    #     if self.action in ['create', 'update', 'partial_update', 'destroy']:
+    #         return [permissions.IsAuthenticated(), IsStaffOrAdmin()]
+    #     return [permissions.AllowAny()]
 
 
 class BrandViewset(ModelViewSet):
