@@ -13,7 +13,22 @@ class BrandViewset(ModelViewSet):
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
 
+
 class ProductAttributeViewset(ModelViewSet):
     queryset = ProductAttribute.objects.all()
     serializer_class = ProductAttributeSerializer
 
+
+class AttributeValueViewset(ModelViewSet):
+    queryset = AttributeValue.objects.all()
+    serializer_class = AttributeValueSerializer
+
+
+class ProductViewset(ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+
+class ProductLineViewset(ModelViewSet):
+    queryset = ProductLine.objects.all()
+    serializer_class = ProductLineSerializer

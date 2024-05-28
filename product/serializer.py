@@ -17,22 +17,30 @@ class BrandSerializer(serializers.ModelSerializer):
 class ProductAttributeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductAttribute
-        fields = "__all__"
+        fields = ["name"]
 
 
 class AttributeValueSerializer(serializers.ModelSerializer):
+    attribute_id = ProductAttributeSerializer()
+    
     class Meta:
         model = AttributeValue
-        fields = "__all__"
+        fields = ["value", "attribute_id"]
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    category = CategorySerializer()
+    
     class Meta:
         model = Product
-        fields = "__all__"
+        fields = ["id", "name", "slug", "description", "is_active", "created_at", "updated_at", "category"]
 
 
 class ProductLineSerializer(serializers.ModelSerializer):
+    brand_id = serializers.StringRelatedField()
+    attributeValue_id = AttributeValueSerializer(many=True)
+
     class Meta:
         model = ProductLine
-        fields = "__all__"
+        fields = ["product_id", "sku", "retail_price", "sale_price", "store_price", "in_stock", "created_at", "updated_at", "brand_id", "attributeValue_id"]
+

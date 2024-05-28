@@ -7,5 +7,8 @@ router = DefaultRouter()
 router.register("category", CategoryViewset)
 router.register("brand", BrandViewset)
 router.register("product-attribute", ProductAttributeViewset)
+router.register("attribute-value", AttributeValueViewset)
+router.register("product", ProductViewset)
+router.register("product-line", ProductLineViewset)
 
 urlpatterns = router.urls
