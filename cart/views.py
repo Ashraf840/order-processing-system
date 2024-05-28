@@ -1,12 +1,14 @@
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from .models import *
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin, DestroyModelMixin
 
 
-class CartViewset(ModelViewSet):
-    # queryset = Cart.objects.all()
-    serializer_class = CartSerializer
+class CartViewset(CreateModelMixin, ListModelMixin, RetrieveModelMixin, DestroyModelMixin, GenericViewSet):
+    """
+    No update of cart will be performed with this API endpoint.
+    """
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -14,10 +16,14 @@ class CartViewset(ModelViewSet):
         if user.is_staff or user.is_superuser:
             return Cart.objects.all()
         return Cart.objects.filter(user=user)
+    
+    def get_serializer_class(self):
+        if self.action in ['create', 'destroy']:
+            return AddUpdateCartSerializer
+        return CartSerializer
 
 
 class CartItemViewset(ModelViewSet):
-    # queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
     permission_classes = [IsAuthenticated]
 

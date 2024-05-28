@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import *
 from user.serializers import UserSerializer
 from product.models import *
+from django.contrib.auth.models import User
 
 
 class SimpleCategorySerializer(serializers.ModelSerializer):
@@ -14,7 +15,7 @@ class SimpleProductSerializer(serializers.ModelSerializer):
     category = SimpleCategorySerializer()
     class Meta:
         model = Product
-        fields = ["id", "name", "category"]
+        fields = ["name", "category"]
 
 
 class SimpleProductAttribute(serializers.ModelSerializer):
@@ -36,7 +37,7 @@ class SimpleProductLineSerializer(serializers.ModelSerializer):
     attributeValue_id = SimpleAttributeValue(many=True)
     class Meta:
         model = ProductLine
-        fields = ["sku", "product_id", "brand_id", "attributeValue_id"]
+        fields = ["product_id", "brand_id", "attributeValue_id"]
 
 
 class CartItemSerializer(serializers.ModelSerializer):
@@ -44,6 +45,22 @@ class CartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
         fields = ["id", "cart_id", "productLine_id", "quantity", "unit_price", "sub_total"]
+
+
+class AddUpdateCartSerializer(serializers.ModelSerializer):
+    user = serializers.EmailField()
+    class Meta:
+        model = Cart
+        fields = ["user"]
+    
+    def save(self, **kwargs):
+        user_email = self.validated_data["user"]
+        try:
+            user = User.objects.get(email=user_email)
+            if not Cart.objects.filter(user=user).exists():
+                Cart.objects.create(user=user)
+        except:
+            pass
 
 
 class CartSerializer(serializers.ModelSerializer):
