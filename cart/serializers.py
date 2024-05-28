@@ -3,51 +3,30 @@ from .models import *
 from user.serializers import UserSerializer
 from product.models import *
 from django.contrib.auth.models import User
+from product.serializers import SimpleProductLineSerializer
 
 
-class SimpleCategorySerializer(serializers.ModelSerializer):
+class CRUDCartItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Category
-        fields = ["name"]
+        model = CartItem
+        fields = ["cart_id", "productLine_id", "quantity"]
+    
+    def save(self, **kwargs):
+        cart_id = self.validated_data["cart_id"]    # Automatically validating the cart id to get the cart object
+        productLine_id = self.validated_data["productLine_id"]  # Automatically validating the sku to get the product line object
+        quantity = self.validated_data["quantity"]
+
+        CartItem.objects.create(cart_id=cart_id, productLine_id=productLine_id, quantity=quantity)
 
 
-class SimpleProductSerializer(serializers.ModelSerializer):
-    category = SimpleCategorySerializer()
-    class Meta:
-        model = Product
-        fields = ["name", "category"]
-
-
-class SimpleProductAttribute(serializers.ModelSerializer):
-    class Meta:
-        model = ProductAttribute
-        fields = ["name"]
-
-
-class SimpleAttributeValue(serializers.ModelSerializer):
-    attribute_id = SimpleProductAttribute()
-    class Meta:
-        model = AttributeValue
-        fields = ["value", "attribute_id"]
-
-
-class SimpleProductLineSerializer(serializers.ModelSerializer):
-    product_id = SimpleProductSerializer()
-    brand_id = serializers.StringRelatedField()
-    attributeValue_id = SimpleAttributeValue(many=True)
-    class Meta:
-        model = ProductLine
-        fields = ["product_id", "brand_id", "attributeValue_id"]
-
-
-class CartItemSerializer(serializers.ModelSerializer):
+class ListCartItemSerializer(serializers.ModelSerializer):
     productLine_id = SimpleProductLineSerializer()
     class Meta:
         model = CartItem
         fields = ["id", "cart_id", "productLine_id", "quantity", "unit_price", "sub_total"]
 
 
-class AddUpdateCartSerializer(serializers.ModelSerializer):
+class AddDestroyCartSerializer(serializers.ModelSerializer):
     user = serializers.EmailField()
     class Meta:
         model = Cart
@@ -60,12 +39,13 @@ class AddUpdateCartSerializer(serializers.ModelSerializer):
             if not Cart.objects.filter(user=user).exists():
                 Cart.objects.create(user=user)
         except:
+            # Throw a message to create the new user first.
             pass
 
 
 class CartSerializer(serializers.ModelSerializer):
     user = UserSerializer()
-    items = CartItemSerializer(many=True)
+    items = ListCartItemSerializer(many=True)
     total = serializers.SerializerMethodField(method_name="totalPrice")
     class Meta:
         model = Cart

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from .models import *
 from rest_framework.viewsets import ModelViewSet
-from .serializer import *
+from .serializers import *
 from utils.permissions import mixins
 
 

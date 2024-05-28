@@ -19,12 +19,11 @@ class CartViewset(CreateModelMixin, ListModelMixin, RetrieveModelMixin, DestroyM
     
     def get_serializer_class(self):
         if self.action in ['create', 'destroy']:
-            return AddUpdateCartSerializer
+            return AddDestroyCartSerializer
         return CartSerializer
 
 
 class CartItemViewset(ModelViewSet):
-    serializer_class = CartItemSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -33,3 +32,8 @@ class CartItemViewset(ModelViewSet):
             return CartItem.objects.all()
         cart = Cart.objects.get(user=user)
         return CartItem.objects.filter(cart_id=cart)
+
+    def get_serializer_class(self):
+        if self.action in ['create', 'retrieve', 'update', 'partial_update', 'destroy']:
+            return CRUDCartItemSerializer
+        return ListCartItemSerializer
