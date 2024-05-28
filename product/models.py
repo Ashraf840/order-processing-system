@@ -39,10 +39,25 @@ class Brand(models.Model):
 
 class ProductAttribute(models.Model):
     name = models.CharField(max_length=100)
-    slug = models.SlugField()
+    slug = models.SlugField(max_length=120, blank=True, unique=True)
 
     def __str__(self) -> str:
         return self.name
+
+    def save(self, *args, **kwargs):
+        # If slug is not provided or is empty, generate it from the name field
+        if not self.slug:
+            self.slug = slugify(self.name)
+        
+        # Ensure the slug is unique
+        unique_slug = self.slug
+        counter = 1
+        while Category.objects.filter(slug=unique_slug).exists():
+            unique_slug = f'{self.slug}-{counter}'
+            counter += 1
+        self.slug = unique_slug
+
+        super().save(*args, **kwargs)
 
 class AttributeValue(models.Model):
     value = models.CharField(max_length=100)
