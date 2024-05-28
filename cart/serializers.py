@@ -4,6 +4,7 @@ from user.serializers import UserSerializer
 from product.models import *
 from django.contrib.auth.models import User
 from product.serializers import SimpleProductLineSerializer
+from django.db.models import Q
 
 
 class CRUDCartItemSerializer(serializers.ModelSerializer):
@@ -16,7 +17,17 @@ class CRUDCartItemSerializer(serializers.ModelSerializer):
         productLine_id = self.validated_data["productLine_id"]  # Automatically validating the sku to get the product line object
         quantity = self.validated_data["quantity"]
 
-        CartItem.objects.create(cart_id=cart_id, productLine_id=productLine_id, quantity=quantity)
+        # Check if the product line already exist, then only increase the quantity
+        try:
+            cartItem = CartItem.objects.get(cart_id=cart_id, productLine_id=productLine_id)
+            print("self.context['request'].method:", self.context['request'].method)
+            if self.context['request'].method == 'PATCH' or self.context['request'].method == 'PUT':
+                cartItem.quantity = quantity
+            else:
+                cartItem.quantity += quantity
+            cartItem.save()
+        except:
+            cartItem = CartItem.objects.create(cart_id=cart_id, productLine_id=productLine_id, quantity=quantity)
 
 
 class ListCartItemSerializer(serializers.ModelSerializer):
