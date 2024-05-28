@@ -1,0 +1,11 @@
+#### Differences between SELLING, RETAIL, and STORE price
+
+Sure, let's use a fictional product, a smartphone, to illustrate the differences between selling price, retail price, and store price.
+
+1. **Selling Price**: This is the price displayed to the customer when they browse the product online and add it to their cart. Let's say the selling price of the smartphone is $600. This is the amount the customer pays to purchase the smartphone from the ecommerce platform.
+
+2. **Retail Price**: The retail price is the price at which the smartphone is generally sold to customers in physical retail stores. Let's say the retail price of the smartphone is $700. This is the price that customers might see listed in brick-and-mortar stores, but they might find discounts or promotions that bring the price closer to the selling price.
+
+3. **Store Price**: The store price is the internal price that the retailer or store sets for the smartphone. It might vary based on factors like wholesale cost, overhead expenses, and desired profit margins. Let's say the store price of the smartphone is $500. This is the price that the store pays to acquire the smartphone from the manufacturer or distributor.
+
+So, when a customer adds this smartphone to their cart on the ecommerce platform, the selling price of $600 would be used to calculate the subtotal price. The customer pays $600 for the smartphone, but the retailer might have acquired it for $500 and might sell it at a retail store for $700.

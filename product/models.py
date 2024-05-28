@@ -53,7 +53,7 @@ class AttributeValue(models.Model):
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=120, blank=True)
+    slug = models.SlugField(max_length=120, blank=True, unique=True)
     description = models.TextField(blank=True, null=True)
     is_active = models.BooleanField(default=True, help_text="Automatically deactive if the product is out of stock from the inventory on every product line.")
     created_at = models.DateField(auto_now_add=True)
@@ -79,15 +79,16 @@ class Product(models.Model):
         super().save(*args, **kwargs)
 
 class ProductLine(models.Model):
-    product_id = models.ForeignKey(Product, on_delete=models.PROTECT)
+    product_id = models.ForeignKey(Product, on_delete=models.PROTECT)   # To avoid removing product accidentally from the system, otherwise the entire product line will be deleted from the system.
     sku = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True)
     retail_price = models.FloatField()
     sale_price = models.FloatField()
+    store_price = models.FloatField(null=True, blank=True)  # For internal usage
     in_stock = models.BooleanField(default=True, help_text="Automatically deactive if the product line is out of stock.")
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
-    brand_id = models.ForeignKey(Brand, on_delete=models.PROTECT, null=True, blank=True)
-    attrubuteValue_id = models.ManyToManyField(AttributeValue, blank=True)
+    brand_id = models.ForeignKey(Brand, on_delete=models.PROTECT, null=True, blank=True)    # To avoid removing the entire product line just by deleting any associated brand.
+    attributeValue_id = models.ManyToManyField(AttributeValue, blank=True)
 
     def __str__(self) -> str:
         return f"{self.product_id}"
