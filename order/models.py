@@ -14,7 +14,7 @@ ORDER_STATUS_CHOICES = [
 ]
 
 class Order(models.Model):
-    # Even after removing the foreign keys records from parent table, the order will be persistent for further data analytics.
+    # Even after removing the foreign keys records from parent table, persist the order record for further data analytics.
     # uuid = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     cart_id = models.ForeignKey(Cart, on_delete=models.SET_NULL, null=True)
