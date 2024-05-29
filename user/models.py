@@ -15,4 +15,4 @@ class Address(models.Model):
     updated_at = models.DateField(auto_now=True)
 
     def __str__(self) -> str:
-        return f"cart-{self.user}-{self.street}-{self.created_at}"
+        return f"{self.user}-{self.street}-{self.created_at}"

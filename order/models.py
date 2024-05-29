@@ -22,7 +22,7 @@ class Order(models.Model):
     order_date = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
     shipping_address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
-    grand_total = models.FloatField(blank=True)
+    grand_total = models.FloatField(blank=True, null=True)
 
     def __str__(self) -> str:
         return f"order-{self.user}-{self.order_date}"
