@@ -27,8 +27,10 @@ class CartItem(models.Model):
     
     def save(self, *args, **kwargs):
         # Automatically set the product unit price
-        self.unit_price = self.productLine_id.sale_price
-        # Automatically set the sub total price
-        self.sub_total = self.quantity * self.productLine_id.sale_price
+        if not self.unit_price:
+            self.unit_price = self.productLine_id.sale_price
         
+        # Automatically set the sub total price
+        if not self.sub_total:
+            self.sub_total = self.quantity * self.productLine_id.sale_price
         super().save(*args, **kwargs)

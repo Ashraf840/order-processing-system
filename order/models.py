@@ -31,10 +31,10 @@ class Order(models.Model):
 class OrderItem(models.Model):
     # Doesn't require "created_at" or "updated_at" since the order items will be generated at once. 
     productLine_id = models.ForeignKey(ProductLine, on_delete=models.SET_NULL, null=True)   # For further analytics
-    order_id = models.ForeignKey(Order, on_delete=models.PROTECT)   # Manually delete all the order items before deleteing the order
+    order_id = models.ForeignKey(Order, on_delete=models.PROTECT, related_name="items")   # Manually delete all the order items before deleteing the order
     quantity = models.PositiveBigIntegerField()
-    unit_price = models.FloatField(blank=True)
-    sub_total = models.FloatField(blank=True)
+    unit_price = models.FloatField(blank=True, null=True)
+    sub_total = models.FloatField(blank=True, null=True)
 
     def __str__(self) -> str:
         return f"order-{self.order_id.user}-{self.productLine_id.product_id}"

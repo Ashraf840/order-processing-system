@@ -18,7 +18,7 @@ class CRUDCartItemSerializer(serializers.ModelSerializer):
         productLine_id = attrs.get("productLine_id")
         quantity = attrs.get("quantity")
         previous_cart_unit = 0
-        
+
         # Get the previous unit if exist
         try:
             cartItem = CartItem.objects.get(cart_id=cart_id, productLine_id=productLine_id)
@@ -28,11 +28,19 @@ class CRUDCartItemSerializer(serializers.ModelSerializer):
         
         product_stock = ProductStock.objects.get(productLine_id=productLine_id)
         print("self.context['request'].method:", self.context['request'].method)
+        
         if self.context['request'].method == "POST":
+            if quantity > product_stock.available_unit:
+                raise serializers.ValidationError("Product stock is not available")
             quantity += previous_cart_unit
-            print("total product quantity:", quantity)
-        if quantity > product_stock.available_unit:
-            raise serializers.ValidationError("Product stock is not available")
+            # print("total product quantity:", quantity)
+        
+        if self.context['request'].method == "PUT":
+            if quantity > product_stock.available_unit:
+                raise serializers.ValidationError("Product stock is not available")
+            quantity = previous_cart_unit
+
+        
         return super().validate(attrs)
     
     def save(self, **kwargs):

@@ -2,7 +2,7 @@ from django.db import models
 from product.models import ProductLine
 
 class ProductStock(models.Model):
-    productLine_id = models.ForeignKey(ProductLine, on_delete=models.CASCADE)
+    productLine_id = models.ForeignKey(ProductLine, on_delete=models.CASCADE, related_name='stock')
     available_unit = models.PositiveBigIntegerField(default=0)
     threshhold_unit = models.PositiveBigIntegerField(default=10)
     returned_unit = models.PositiveBigIntegerField(default=0)
