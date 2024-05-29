@@ -11,6 +11,7 @@ class Address(models.Model):
     postal_code = models.CharField(max_length=50)
     country = models.CharField(max_length=150)
     is_default_shipping_address = models.BooleanField(default=False)
+    create_new_shipping_address = models.BooleanField(default=False)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
 
