@@ -4,13 +4,36 @@ from user.serializers import UserSerializer
 from product.models import *
 from django.contrib.auth.models import User
 from product.serializers import SimpleProductLineSerializer
-from django.db.models import Q
+from inventory.models import ProductStock
 
 
 class CRUDCartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
         fields = ["cart_id", "productLine_id", "quantity"]
+    
+    def validate(self, attrs):
+        # Check if the product quantity is avaiable in the stock
+        cart_id = attrs.get("cart_id")
+        productLine_id = attrs.get("productLine_id")
+        quantity = attrs.get("quantity")
+        previous_cart_unit = 0
+        
+        # Get the previous unit if exist
+        try:
+            cartItem = CartItem.objects.get(cart_id=cart_id, productLine_id=productLine_id)
+            previous_cart_unit += cartItem.quantity
+        except:
+            pass
+        
+        product_stock = ProductStock.objects.get(productLine_id=productLine_id)
+        print("self.context['request'].method:", self.context['request'].method)
+        if self.context['request'].method == "POST":
+            quantity += previous_cart_unit
+            print("total product quantity:", quantity)
+        if quantity > product_stock.available_unit:
+            raise serializers.ValidationError("Product stock is not available")
+        return super().validate(attrs)
     
     def save(self, **kwargs):
         cart_id = self.validated_data["cart_id"]    # Automatically validating the cart id to get the cart object
@@ -20,7 +43,7 @@ class CRUDCartItemSerializer(serializers.ModelSerializer):
         # Check if the product line already exist, then only increase the quantity
         try:
             cartItem = CartItem.objects.get(cart_id=cart_id, productLine_id=productLine_id)
-            print("self.context['request'].method:", self.context['request'].method)
+            # print("self.context['request'].method:", self.context['request'].method)
             if self.context['request'].method == 'PATCH' or self.context['request'].method == 'PUT':
                 cartItem.quantity = quantity
             else:
