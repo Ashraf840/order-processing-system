@@ -4,6 +4,7 @@ from user.serializers import UserSerializer
 from product.serializers import ProductLineSerializer
 from cart.models import *
 from django.db import transaction
+from inventory.models import ProductStock
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -28,9 +29,13 @@ class CreateOrderSerializer(serializers.Serializer):
             print("cartItem:", cartItems)
             grand_total = 0
             orderItems = []
+            out_of_stock = []
             for item in cartItems:
                 # Check cart item quantity is not bigger than the product stock quantity
-                if item.quantity < item.productLine_id.stock.available_unit:
+                productStock = ProductStock.objects.get(productLine_id=item.productLine_id)
+                if item.quantity <= productStock.available_unit:
+                    productStock.available_unit -= item.quantity
+                    productStock.save()
                     grand_total += item.sub_total
                     orderItems.append(
                         OrderItem(
@@ -41,13 +46,22 @@ class CreateOrderSerializer(serializers.Serializer):
                             sub_total=item.sub_total,
                         )
                     )
+                else:
+                    out_of_stock.append({
+                        'product': item.productLine_id.product_id.name,
+                        'sku': str(item.productLine_id.sku),
+                        })
+            
+            if len(out_of_stock) > 0:
+                raise serializers.ValidationError("The following items are out of stock: {}".format(out_of_stock))
+            
             OrderItem.objects.bulk_create(orderItems)
             order.grand_total = grand_total
             order.save()
-            # Decrease the product quantity from the stock
 
-            # After creating order items, delete the cart
-            # cart.delete()
+            # After successfully creating order items, delete the cart
+            cart.delete()
+            
             return order
 
 
