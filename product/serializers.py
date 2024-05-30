@@ -51,8 +51,16 @@ class AttributeValueSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = AttributeValue
-        fields = ["value", "attribute_id"]
+        fields = ["id", "value", "attribute_id"]
         ref_name = 'AttributeValueSerializerApp'
+
+
+class UpdatePatchAttributeValueSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = AttributeValue
+        fields = ["id", "value"]
+        ref_name = 'UpdatePatchAttributeValueSerializerApp'
 
 
 class SimpleProductSerializer(serializers.ModelSerializer):

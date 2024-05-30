@@ -38,7 +38,7 @@ class Brand(models.Model):
         return self.name
 
 class ProductAttribute(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=120, blank=True, unique=True)
 
     def __str__(self) -> str:
