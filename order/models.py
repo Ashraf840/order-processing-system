@@ -6,11 +6,11 @@ import uuid
 from user.models import Address
 
 ORDER_STATUS_CHOICES = [
-    ('P', 'Pending'),
-    ('S', 'Successful'),
-    ('R', 'Refunded'),
-    ('F', 'Failed'),
-    ('C', 'Cancelled'),
+    ('Pending', 'Pending'),
+    ('Successful', 'Successful'),
+    ('Refunded', 'Refunded'),
+    ('Failed', 'Failed'),
+    ('Cancelled', 'Cancelled'),
 ]
 
 class Order(models.Model):
@@ -52,7 +52,7 @@ class OrderItem(models.Model):
 class PaymentInformation(models.Model):
     order_id = models.OneToOneField(Order, on_delete=models.SET_NULL, null=True)
     payment_method = models.CharField(max_length=100)
-    transaction_id = models.CharField(max_length=100)
+    transaction_id = models.UUIDField(default=uuid.uuid4, unique=True)
     amount = models.FloatField(blank=True)  # amount = Order.grand_total
     payment_date = models.DateField(auto_now_add=True)
 

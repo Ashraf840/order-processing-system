@@ -86,7 +86,7 @@ class CreateOrderSerializer(serializers.Serializer):
             order.save()
 
             # After successfully creating order items, delete the cart
-            # cart.delete()
+            cart.delete()
             
             return order
 
@@ -98,3 +98,27 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ["id", "user", "cart_id", "status", "order_date", "shipping_address", "items", "grand_total"]
+
+
+class PaymentInformationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PaymentInformation
+        fields = "__all__"
+        read_only_fields = ["transaction_id", "amount"]
+    
+    def save(self, **kwargs):
+        order_id = self.validated_data["order_id"]
+        payment_method = self.validated_data["payment_method"]
+
+        # Get the order record
+        order = Order.objects.get(id=order_id.id)
+
+        # Create payment record
+        amount = order.grand_total
+        payment = PaymentInformation.objects.create(order_id=order_id, payment_method=payment_method, amount=amount)
+
+        if payment:
+            order.status = 'Successful'
+        else:
+            order.status = 'Failed'
+        order.save()
