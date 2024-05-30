@@ -7,6 +7,7 @@ from django.db import transaction
 from inventory.models import ProductStock
 from user.serializers import UserAddressSerializer
 from user.models import Address
+from django.db.models import Q
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -26,10 +27,10 @@ class CreateOrderSerializer(serializers.Serializer):
             cart = Cart.objects.get(id=cart_id)
             user = self.context['user']
             shipping_address = self.validated_data["shipping_address"]
-            # If it's not the customer's default address, the create the address, otherwise fetch the customers default address from the db
+            # Not a default shipping address
             if not shipping_address['is_default_shipping_address']:
-                print("shipping address:", shipping_address)
-                uadd_serializer = Address.objects.create(
+                print("shipping address (new):", shipping_address)
+                u_address = Address.objects.create(
                     user=user,
                     street=shipping_address["street"],
                     city=shipping_address["city"],
@@ -39,13 +40,16 @@ class CreateOrderSerializer(serializers.Serializer):
                     is_default_shipping_address=shipping_address["is_default_shipping_address"],
                 )
             else:
-                # filter: user & is_default_shipping_address=true
-                pass
+                # Since the customer selected the default shipping address, search for record in the address table using the user & is_default_shipping_address=True
+                u_address = Address.objects.filter(Q(user=user) & Q(is_default_shipping_address=True)).first()
+                print("shipping address (old):", u_address)
+                
+
             
             # Refined Logic: first check if that specific user has any address in the address table, if no record found then create a new one. But if a record is found which doest
             
             # Create order record
-            order = Order.objects.create(user=user, cart_id=cart, shipping_address=uadd_serializer)
+            order = Order.objects.create(user=user, cart_id=cart, shipping_address=u_address)
             # Get all the cart items of that specific cart
             cartItems = cart.items.all()
             # print("cartItem:", cartItems)

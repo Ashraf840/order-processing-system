@@ -8,7 +8,7 @@ class UserAddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
         fields = "__all__"
-        read_only_fields = ["uuid"]
+        read_only_fields = ["uuid", "user"]
 
 
 class UserSerializer(serializers.ModelSerializer):
