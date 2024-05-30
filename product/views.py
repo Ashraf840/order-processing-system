@@ -57,7 +57,6 @@ class AttributeValueViewset(mixins.StaffOrAdminViewSetMixin, ModelViewSet):
 
 class ProductViewset(mixins.StaffOrAdminViewSetMixin, ModelViewSet):
     queryset = Product.objects.all()
-    serializer_class = ProductSerializer
 
     def get_serializer_class(self):
         if self.request.method == "GET":
@@ -70,3 +69,11 @@ class ProductViewset(mixins.StaffOrAdminViewSetMixin, ModelViewSet):
 class ProductLineViewset(mixins.StaffOrAdminViewSetMixin, ModelViewSet):
     queryset = ProductLine.objects.all()
     serializer_class = ProductLineSerializer
+
+    def get_serializer_class(self):
+        print("self.request.method:", self.request.method)
+        if self.request.method == "GET":
+            return ProductLineSerializer
+        # if (self.request.method == "PUT") or (self.request.method == "PATCH"):
+        #     return UpdateProductSerializer
+        return CRUDProductLineSerializer

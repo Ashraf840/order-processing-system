@@ -127,6 +127,39 @@ class SimpleProductLineSerializer(serializers.ModelSerializer):
         ref_name = 'SimpleProductLineSerializerApp'
 
 
+class CRUDProductLineSerializer(serializers.ModelSerializer):
+    product_id = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+    brand_id = serializers.PrimaryKeyRelatedField(queryset=Brand.objects.all())
+    attributeValue_id = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=AttributeValue.objects.all()
+    )
+
+    class Meta:
+        model = ProductLine
+        fields = [
+            "product_id", "retail_price", "sale_price", "store_price", 
+            "brand_id", "attributeValue_id", "in_stock", "created_at", "updated_at"
+        ]
+        ref_name = 'CRUDProductLineSerializerApp'
+
+    def create(self, validated_data):
+        attribute_values = validated_data.pop('attributeValue_id', [])
+        product_line = ProductLine.objects.create(**validated_data)
+        product_line.attributeValue_id.set(attribute_values)
+        return product_line
+
+    def update(self, instance, validated_data):
+        attribute_values = validated_data.pop('attributeValue_id', None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        
+        if attribute_values is not None:
+            instance.attributeValue_id.set(attribute_values)
+        
+        instance.save()
+        return instance
+
+
 class ProductLineSerializer(serializers.ModelSerializer):
     product_id = SimpleProductSerializer()
     brand_id = serializers.StringRelatedField()
