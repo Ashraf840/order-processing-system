@@ -15,11 +15,15 @@ class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
         fields = ["id", "productLine_id", "quantity", "unit_price", "sub_total"]
+        ref_name = 'OrderItemSerializerApp'
 
 
 class CreateOrderSerializer(serializers.Serializer):
     cart_id = serializers.IntegerField()
     shipping_address = UserAddressSerializer()
+
+    class Meta:
+        ref_name = 'CreateOrderSerializerApp'
 
     def save(self, **kwargs):
         with transaction.atomic():
@@ -95,9 +99,11 @@ class OrderSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     items = OrderItemSerializer(many=True, read_only=True)
     shipping_address = UserAddressSerializer()
+
     class Meta:
         model = Order
         fields = ["id", "user", "cart_id", "status", "order_date", "shipping_address", "items", "grand_total"]
+        ref_name = 'OrderSerializerApp'
 
 
 class PaymentInformationSerializer(serializers.ModelSerializer):
@@ -105,6 +111,7 @@ class PaymentInformationSerializer(serializers.ModelSerializer):
         model = PaymentInformation
         fields = "__all__"
         read_only_fields = ["transaction_id", "amount"]
+        ref_name = 'PaymentInformationSerializerApp'
     
     def save(self, **kwargs):
         order_id = self.validated_data["order_id"]

@@ -6,30 +6,35 @@ class SimpleCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ["name"]
+        ref_name = 'SimpleCategorySerializerApp'
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ["id", "name", "slug", "parent"]
+        ref_name = 'CategorySerializerApp'
 
 
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
         fields = "__all__"
+        ref_name = 'BrandSerializerApp'
 
 
 class SimpleProductAttributeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductAttribute
         fields = ["name"]
+        ref_name = 'SimpleProductAttributeSerializerApp'
 
 
 class ProductAttributeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductAttribute
         fields = ["name"]
+        ref_name = 'ProductAttributeSerializerApp'
 
 
 class SimpleAttributeValueSerializer(serializers.ModelSerializer):
@@ -38,6 +43,7 @@ class SimpleAttributeValueSerializer(serializers.ModelSerializer):
     class Meta:
         model = AttributeValue
         fields = ["value", "attribute_id"]
+        ref_name = 'SimpleAttributeValueSerializerApp'
 
 
 class AttributeValueSerializer(serializers.ModelSerializer):
@@ -46,6 +52,7 @@ class AttributeValueSerializer(serializers.ModelSerializer):
     class Meta:
         model = AttributeValue
         fields = ["value", "attribute_id"]
+        ref_name = 'AttributeValueSerializerApp'
 
 
 class SimpleProductSerializer(serializers.ModelSerializer):
@@ -54,6 +61,7 @@ class SimpleProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ["name", "category"]
+        ref_name = 'SimpleProductSerializerApp'
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -62,6 +70,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ["id", "name", "slug", "description", "is_active", "created_at", "updated_at", "category"]
+        ref_name = 'ProductSerializerApp'
 
 
 class SimpleProductLineSerializer(serializers.ModelSerializer):
@@ -72,6 +81,7 @@ class SimpleProductLineSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductLine
         fields = ["product_id", "brand_id", "attributeValue_id"]
+        ref_name = 'SimpleProductLineSerializerApp'
 
 
 class ProductLineSerializer(serializers.ModelSerializer):
@@ -82,3 +92,4 @@ class ProductLineSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductLine
         fields = ["product_id", "sku", "retail_price", "sale_price", "store_price", "in_stock", "created_at", "updated_at", "brand_id", "attributeValue_id"]
+        ref_name = 'ProductLineSerializerApp'

@@ -11,6 +11,7 @@ class CRUDCartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
         fields = ["cart_id", "productLine_id", "quantity"]
+        ref_name = 'CRUDCartItemSerializerApp'
     
     def validate(self, attrs):
         # Check if the product quantity is avaiable in the stock
@@ -66,6 +67,7 @@ class ListCartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
         fields = ["id", "cart_id", "productLine_id", "quantity", "unit_price", "sub_total"]
+        ref_name = 'ListCartItemSerializerApp'
 
 
 class AddDestroyCartSerializer(serializers.ModelSerializer):
@@ -73,6 +75,7 @@ class AddDestroyCartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = ["user"]
+        ref_name = 'AddDestroyCartSerializerApp'
     
     def save(self, **kwargs):
         user_email = self.validated_data["user"]
@@ -92,6 +95,7 @@ class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = ["id", "user", "created_at", "updated_at", "items", "total"]
+        ref_name = 'CartSerializerApp'
 
     def totalPrice(self, cart: Cart):
         items = cart.items.all()
