@@ -71,9 +71,6 @@ class ProductLineViewset(mixins.StaffOrAdminViewSetMixin, ModelViewSet):
     serializer_class = ProductLineSerializer
 
     def get_serializer_class(self):
-        print("self.request.method:", self.request.method)
         if self.request.method == "GET":
             return ProductLineSerializer
-        # if (self.request.method == "PUT") or (self.request.method == "PATCH"):
-        #     return UpdateProductSerializer
         return CRUDProductLineSerializer

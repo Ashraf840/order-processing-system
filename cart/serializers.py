@@ -28,13 +28,11 @@ class CRUDCartItemSerializer(serializers.ModelSerializer):
             pass
         
         product_stock = ProductStock.objects.get(productLine_id=productLine_id)
-        print("self.context['request'].method:", self.context['request'].method)
         
         if self.context['request'].method == "POST":
             if quantity > product_stock.available_unit:
                 raise serializers.ValidationError("Product stock is not available")
             quantity += previous_cart_unit
-            # print("total product quantity:", quantity)
         
         if self.context['request'].method == "PUT":
             if quantity > product_stock.available_unit:
