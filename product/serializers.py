@@ -72,6 +72,41 @@ class SimpleProductSerializer(serializers.ModelSerializer):
         ref_name = 'SimpleProductSerializerApp'
 
 
+
+
+class UpdateProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ["id", "name", "description", "is_active"]
+        ref_name = 'UpdateProductSerializerApp'
+
+    
+class CRDProductSerializer(serializers.ModelSerializer):
+    category = serializers.IntegerField()
+    
+    class Meta:
+        model = Product
+        fields = ["id", "name", "description", "category"]
+        ref_name = 'CRDProductSerializerApp'
+
+    def save(self, **kwargs):
+        name = self.validated_data["name"]
+        description = self.validated_data["description"]
+        category = self.validated_data["category"]
+        print("category:", category)
+        try:
+            category_obj = Category.objects.get(id=category)
+            print("category_obj:", category_obj)
+            product = Product.objects.create(
+                name=name,
+                description=description,
+                category=category_obj
+            )
+            print("product:", product)
+        except:
+            pass
+
+
 class ProductSerializer(serializers.ModelSerializer):
     category = CategorySerializer()
     

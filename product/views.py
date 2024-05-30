@@ -27,7 +27,6 @@ class AttributeValueViewset(mixins.StaffOrAdminViewSetMixin, ModelViewSet):
     serializer_class = AttributeValueSerializer
 
     def get_serializer_class(self):
-        print("self.action:", self.action)
         if self.action in ["update", "partial_update"]:
             return UpdatePatchAttributeValueSerializer
         return AttributeValueSerializer
@@ -59,6 +58,13 @@ class AttributeValueViewset(mixins.StaffOrAdminViewSetMixin, ModelViewSet):
 class ProductViewset(mixins.StaffOrAdminViewSetMixin, ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == "GET":
+            return ProductSerializer
+        if (self.request.method == "PUT") or (self.request.method == "PATCH"):
+            return UpdateProductSerializer
+        return CRDProductSerializer
 
 
 class ProductLineViewset(mixins.StaffOrAdminViewSetMixin, ModelViewSet):
